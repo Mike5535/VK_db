@@ -1,0 +1,17 @@
+{
+  "name": "vk_db",
+  "version": "1.0.0",
+  "description": "private project for database course",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "Volkov Mike",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^4.11.0",
+    "fastify-postgres": "^3.7.0",
+    "pg": "^8.8.0",
+    "pg-promise": "^11.0.2"
+  }
+}
