@@ -26,9 +26,10 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 RUN apt-get install -y curl
-RUN curl —silent —location https://deb.nodesource.com/setup_13.x | bash -
+RUN curl —silent —location https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get install -y nodejs
 RUN apt-get install -y build-essential
+
 
 WORKDIR /usr/src/app
 
@@ -40,4 +41,4 @@ EXPOSE 5000
 
 ENV PGPASSWORD docker
 
-CMD service postgresql start && psql -h localhost -d docker -U docker -p 5432 -a -q -f ./src/db/db.sql && tsc && node src/index.js
+CMD service postgresql start && psql -h localhost -d docker -U docker -p 5432 -a -q -f ./src/db/db.sql && node src/index.js
