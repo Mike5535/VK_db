@@ -9,6 +9,7 @@
   "author": "Volkov Mike",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "fastify": "^4.11.0",
     "fastify-postgres": "^3.7.0",
     "pg": "^8.8.0",
