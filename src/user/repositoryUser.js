@@ -2,7 +2,7 @@ import { Response } from "../models/response.js";
 import { Database } from "../driverDb/database.js";
 import { validateColumn } from "../utils/utils.js";
 
-export default new class RepositoryUser {
+export default new class UserRepository {
     constructor() {
         this.dbcon = Database;
     }
