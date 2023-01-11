@@ -1,13 +1,17 @@
-const promise = require('bluebird');
+import promise from 'bluebird';
+import pgPromise from 'pg-promise';
 
-export const pgp = require('pg-promise')({
+export const pgp = pgPromise({
     capSQL: true,
     promiseLib: promise,
 });
 
-export default new class Database {
+class Db {
     constructor() {
         this.pgp = pgp;
-        this.db = pgp('postgres://docker:docker@localhost:5535/docker');
+        this.db = pgp('postgres://docker:docker@localhost:5432/docker');
+        console.log(this.db);
     }
 }
+
+export const Database = new Db();

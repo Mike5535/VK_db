@@ -14,5 +14,6 @@
     "fastify-postgres": "^3.7.0",
     "pg": "^8.8.0",
     "pg-promise": "^11.0.2"
-  }
+  },
+  "type": "module"
 }
