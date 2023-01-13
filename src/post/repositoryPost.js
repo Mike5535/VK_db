@@ -57,9 +57,24 @@ export default new class PostRepository {
         const query = this.dbcon.pgp.helpers.insert(values, cs) +
             ' RETURNING id';
 
+        const valuesAuthors = posts.map((item, index) => {
+            return {
+                forum_slug: thread.props.forum,
+                user_id: users[index].id,
+            }
+        });
+
+        const csAuthors = new this.dbcon.pgp.helpers.ColumnSet(
+            ['forum_slug', 'user_id']
+            ,{ table: 'forum_users'});
+        const queryInsertAuthors = this.dbcon.pgp.helpers.insert(valuesAuthors, csAuthors) +
+            ' ON CONFLICT DO NOTHING ';
 
         try {
+
+
             const ids = await this.dbcon.db.many(query);
+            await this.dbcon.db.none(queryInsertAuthors);
 
             response.props.body = values.map((item, index) => {
                 return {
@@ -80,7 +95,8 @@ export default new class PostRepository {
             response.props.body = e.message;
         }
 
-       return response;
+        await this.updatePostsCount(posts.length, thread.props.forum);
+        return response;
     }
 
     async updatePost(post) {
@@ -161,5 +177,19 @@ export default new class PostRepository {
         try {
             return await this.dbcon.db.none(`TRUNCATE posts CASCADE`);
         } catch (error) {}
+    }
+
+    async updatePostsCount(countPosts, forumSlug) {
+
+        await this.dbcon.db.none(`UPDATE forums SET posts = posts + $1 WHERE slug = $2`, [countPosts, forumSlug]);
+
+        // const forum_slug = await this.dbcon.db.manyOrNone(`SELECT DISTINCT forum_slug FROM posts`);
+
+        // if(forum_slug) {
+        //     forum_slug.forEach(async elem => {
+        //        // console.log('slug',elem.forum_slug)
+        //         await this.dbcon.db.none(`UPDATE forums SET posts = (SELECT count(*) FROM posts WHERE forum_slug = ${elem.forum_slug}) WHERE slug = ${elem.forum_slug}`);
+        //     });
+        // }
     }
 }

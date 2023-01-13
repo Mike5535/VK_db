@@ -67,7 +67,7 @@ export default new class HandlerForum {
         let dbThread = ThreadRepository.getThread('slug', thread.props.slug);
         let forum = ForumRepository.getBySlug(slug);
 
-        Promise.all([dbThread, forum]).then( async (result) => {
+        await Promise.all([dbThread, forum]).then( async (result) => {
            dbThread = result[0];
            forum = result[1];
 

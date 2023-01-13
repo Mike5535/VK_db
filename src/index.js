@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify from "fastify";
 
 import { Api } from './config/config.js';
 import HandlerUser from './user/handlerUser.js';
@@ -11,7 +11,7 @@ const server = fastify({
     logger: true,
 });
 
-server.addContentTypeParser('serverlication/json', { parseAs: 'string' }, function (req, body, done) {
+server.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
     try {
         let json = {};
         if (body){
@@ -19,7 +19,8 @@ server.addContentTypeParser('serverlication/json', { parseAs: 'string' }, functi
         }
         done(null, json)
     } catch (err) {
-        err.statusCode = 400;
+        console.error(err)
+        err.statusCode = 403;
         done(err, undefined)
     }
 });
@@ -46,9 +47,9 @@ server.get(Api.get.post.threads, HandlerPost.getDetails);
 server.post(Api.post.service, HandlerService.delete);
 server.get(Api.get.service, HandlerService.status);
 
-server.get('/api', (req, res) => {
-    return res.code(404).send(null);
-});
+// server.get('/api', (req, res) => {
+//     return res.code(404).send(null);
+// });
 
 server.listen({ port: 5000, host: '0.0.0.0' }, (err) => {
     if (err) {
