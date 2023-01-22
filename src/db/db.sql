@@ -87,7 +87,7 @@ CREATE INDEX ON forum_users (forum_slug, user_id);
 CREATE INDEX ON posts (thread_id, array_length(path, 1))
     WHERE array_length(path, 1) = 1;
 CREATE INDEX ON posts ((path[1]));
--- CREATE INDEX ON posts ((path[1]), (path[2:]), created, id);
+CREATE INDEX ON posts ((path[1]), (path[2:]), created, id);
 CREATE INDEX ON posts (thread_id, array_length(path, 1), (path[1]))
     WHERE array_length(path, 1) = 1;
 CREATE INDEX idx_forums_id ON forums(id);
