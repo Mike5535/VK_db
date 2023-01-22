@@ -180,16 +180,6 @@ export default new class PostRepository {
     }
 
     async updatePostsCount(countPosts, forumSlug) {
-
         await this.dbcon.db.none(`UPDATE forums SET posts = posts + $1 WHERE slug = $2`, [countPosts, forumSlug]);
-
-        // const forum_slug = await this.dbcon.db.manyOrNone(`SELECT DISTINCT forum_slug FROM posts`);
-
-        // if(forum_slug) {
-        //     forum_slug.forEach(async elem => {
-        //        // console.log('slug',elem.forum_slug)
-        //         await this.dbcon.db.none(`UPDATE forums SET posts = (SELECT count(*) FROM posts WHERE forum_slug = ${elem.forum_slug}) WHERE slug = ${elem.forum_slug}`);
-        //     });
-        // }
     }
 }

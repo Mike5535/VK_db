@@ -37,8 +37,8 @@ export default new class HandlerThread {
     async voteToThread(req, res) {
         const vote = req.body;
 
-        const type = isId(req.params.slug) ? 'id' : 'slug';
-        const value = isId(req.params.slug) ? Number(req.params.slug) : req.params.slug;
+        const type = isId(req.params.slug) ? 'id' : 'LOWER(slug)';
+        const value = isId(req.params.slug) ? Number(req.params.slug) :req.params.slug.toLowerCase();
 
 
         const voteResult = await ThreadRepository.createVote(vote.voice, vote.nickname, type, value);

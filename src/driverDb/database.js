@@ -10,7 +10,6 @@ class Db {
     constructor() {
         this.pgp = pgp;
         this.db = pgp('postgres://docker:docker@localhost:5432/docker');
-        console.log(this.db);
     }
 }
 

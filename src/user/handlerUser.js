@@ -42,6 +42,12 @@ export default new class HandlerUser {
             return res.code(404).send({ message: 'Can\'t find user with nickname ' + req.params.nickname })
         }
 
+        const nickWithSameEmale = await UserRepository.getNickByEmail(req.body.email);
+        
+        if(nickWithSameEmale && nickWithSameEmale !== req.params.nickname) {
+            return res.code(409).send({ message: 'This email is already registered by user: ' + nickWithSameEmale })
+        }
+
         const update = await UserRepository.update(updateUser);
 
         if (!update) {

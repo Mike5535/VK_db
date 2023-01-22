@@ -11,7 +11,7 @@ export default new class ThreadRepository {
         const response = new Response();
 
         try {
-            await this.dbcon.db.none('UPDATE forums SET threads = threads + 1 WHERE slug = $1', forum.props.slug);
+            await this.dbcon.db.none('UPDATE forums SET threads = threads + 1 WHERE LOWER(slug) = LOWER($1)', forum.props.slug);
             await this.dbcon.db.none('INSERT INTO forum_users (forum_slug, user_id) VALUES ($1, (SELECT id FROM users WHERE nickname = $2)) ON CONFLICT DO NOTHING', [forum.props.slug, user.props.nickname]);
             response.props.body  = await this.dbcon.db.one('INSERT INTO threads (slug, author, author_id, forum, created, title, message) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, slug, author, forum, created, title, message, votes',
                 [
@@ -34,7 +34,11 @@ export default new class ThreadRepository {
 
     async getThread(type, value) {
         try {
-            return await this.dbcon.db.oneOrNone(`SELECT id, slug, author, forum, created, title, message, votes FROM threads WHERE ${type} = $1`, value)
+            if(type === 'id') {
+                return await this.dbcon.db.oneOrNone(`SELECT id, slug, author, forum, created, title, message, votes FROM threads WHERE id = $1`, value)
+            } else {
+                return await this.dbcon.db.oneOrNone('SELECT id, slug, author, forum, created, title, message, votes FROM threads WHERE LOWER(slug) = LOWER($1)', value)
+            }
         } catch {}
     }
 
@@ -86,8 +90,8 @@ export default new class ThreadRepository {
     async createVote(voice, user, type, value) {
         const response = new Response();
 
-        const request = type === 'id' ? 'VALUES ($3, $2, $1)' : 'SELECT $3, threads.id, $1 FROM threads WHERE threads.slug = $2';
-        const requestUptVotes = type === 'id' ? '$2' : '(SELECT threads.id FROM threads WHERE threads.slug = $2)';
+        const request = type === 'id' ? 'VALUES ($3, $2, $1)' : 'SELECT $3, threads.id, $1 FROM threads WHERE LOWER(threads.slug) = $2';
+        const requestUptVotes = type === 'id' ? '$2' : '(SELECT threads.id FROM threads WHERE LOWER(threads.slug) = $2)';
 
         let id_thread;
         try{

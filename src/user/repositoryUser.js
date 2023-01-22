@@ -15,7 +15,7 @@ export default new class UserRepository {
             await this.dbcon.db.none(`INSERT INTO users (nickname, about, fullname, email) VALUES ($1, $2, $3, $4)`, [nickname, about, fullname, email]);
             result.update({ status: 201, body: user.props });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             result.update({ status: 500, body: { message: error.message } });
         }
 
@@ -24,7 +24,14 @@ export default new class UserRepository {
 
     async getByNickname(nickname) {
         try {
-            return await this.dbcon.db.oneOrNone(`SELECT id, nickname, fullname, email, about FROM users WHERE nickname = $1`, nickname);
+            return await this.dbcon.db.oneOrNone(`SELECT id, nickname, fullname, email, about FROM users WHERE LOWER(nickname) = LOWER($1)`, nickname);
+        } catch {
+        }
+    }
+
+    async getNickByEmail(email) {
+        try {
+            return await this.dbcon.db.oneOrNone(`SELECT nickname FROM users WHERE LOWER(email) = LOWER($1)`, email);
         } catch {
         }
     }
@@ -46,7 +53,7 @@ export default new class UserRepository {
             if (query === true) {
                 return true;
             } else {
-                query += ` WHERE \"nickname\" = \'${user.props.nickname}\' RETURNING nickname, fullname, about, email`;
+                query += ` WHERE LOWER(\"nickname\") = LOWER(\'${user.props.nickname}\') RETURNING nickname, fullname, about, email`;
             }
 
             return await this.dbcon.db.oneOrNone(query);
@@ -57,12 +64,12 @@ export default new class UserRepository {
 
     async getUsersByNicknameOrEmail(nickname, email) {
         try {
-            return await this.dbcon.db.manyOrNone(`SELECT nickname, email, about, fullname FROM users WHERE nickname = $1 OR email = $2`, [nickname, email]);
+            return await this.dbcon.db.manyOrNone(`SELECT nickname, email, about, fullname FROM users WHERE LOWER(nickname) = LOWER($1) OR LOWER(email) = LOWER($2)`, [nickname, email]);
         } catch {
         }
     }
 
-    async getUsersFromForum(forum, params) {
+    async getUsersFromForum(forumSlug, params) {
         let { limit, since, desc } = params;
         let query = 'select users.id, users.nickname, users.fullname, users.about, users.email from users join forum_users on forum_users.user_id = users.id where forum_users.forum_slug = $1';
 
@@ -71,13 +78,13 @@ export default new class UserRepository {
         limit = limit ? limit : null;
 
         if (since) {
-            query += ` AND nickname ${sign} '${since}' `
+            query += ` AND LOWER(nickname) ${sign} LOWER('${since}') `
         }
 
-        query += ` ORDER BY nickname ${order} LIMIT ${limit}`;
+        query += ` ORDER BY LOWER(nickname) ${order} LIMIT ${limit}`;
 
         try {
-            return await this.dbcon.db.manyOrNone(query, forum);
+            return await this.dbcon.db.manyOrNone(query, forumSlug);
         } catch {}
     }
 

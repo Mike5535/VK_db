@@ -32,7 +32,7 @@ export default new class ForumRepository {
 
     async getBySlug(slug) {
         try {
-            return await this.dbcon.db.oneOrNone(`SELECT id, slug, title, nickname, posts, threads FROM forums WHERE slug = $1`, slug);
+            return await this.dbcon.db.oneOrNone('SELECT id, slug, title, nickname, posts, threads FROM forums WHERE LOWER(slug) = LOWER($1)', slug);
         } catch  {}
     }
 
